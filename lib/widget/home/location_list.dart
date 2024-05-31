@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mpu_sql/model/iot_device_model.dart';
 import 'package:mpu_sql/model/location_model.dart';
-import 'package:mpu_sql/model/mpu_model.dart';
 import 'package:mpu_sql/services/provider.dart';
-import 'package:mpu_sql/widget/home/add_mpu_button.dart';
+import 'package:mpu_sql/widget/home/add_iot_device_button.dart';
+import 'package:mpu_sql/widget/home/iot_device_list_type.dart';
 import 'package:mpu_sql/widget/home/location_text.dart';
-import 'package:mpu_sql/widget/home/mpu_list_type.dart';
+
 import 'package:provider/provider.dart';
 
 class LocationList extends StatelessWidget {
@@ -40,13 +41,15 @@ class LocationList extends StatelessWidget {
                 ),
                 Consumer<DatabaseProvider>(
                   builder: (context, db, child) {
-                    final List<MpuModel> mpus = db.mpus
-                        .where((mpu) => mpu.locationId == location.id)
+                    final List<IotDeviceModel> iotDevices = db.iotDevices
+                        .where(
+                            (iotDevice) => iotDevice.locationId == location.id)
                         .toList();
-                    if (mpus.isNotEmpty) {
-                      return MpuListType(mpus: mpus, locationId: location.id!);
+                    if (iotDevices.isNotEmpty) {
+                      return IotDeviceListType(
+                          iotDevices: iotDevices, locationId: location.id!);
                     } else {
-                      return const AddMpuButton();
+                      return const AddIotDeviceButton();
                     }
                   },
                 ),

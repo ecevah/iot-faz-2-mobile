@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:mpu_sql/model/mpu_model.dart';
+import 'package:mpu_sql/model/iot_device_model.dart';
 import 'package:mpu_sql/services/provider.dart';
 import 'package:provider/provider.dart';
 
-class MpuController extends StatefulWidget {
-  const MpuController({Key? key}) : super(key: key);
+class iotDeviceController extends StatefulWidget {
+  const iotDeviceController({Key? key}) : super(key: key);
 
   @override
-  State<MpuController> createState() => _MpuControllerState();
+  State<iotDeviceController> createState() => _iotDeviceControllerState();
 }
 
-class _MpuControllerState extends State<MpuController> {
-  late Future _mpuList;
+class _iotDeviceControllerState extends State<iotDeviceController> {
+  late Future _iotDeviceList;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _mpuList = _getMpuList();
+    _iotDeviceList = _getiotDeviceList();
   }
 
-  Future _getMpuList() async {
+  Future _getiotDeviceList() async {
     final provider = Provider.of<DatabaseProvider>(context, listen: false);
-    return await provider.fetchMpus();
+    return await provider.fetchiotDevices();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mpu Controller'),
+        title: const Text('iotDevice Controller'),
       ),
       body: FutureBuilder(
-        future: _mpuList,
+        future: _iotDeviceList,
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasError) {
@@ -45,7 +45,7 @@ class _MpuControllerState extends State<MpuController> {
                     Expanded(
                       child: Consumer<DatabaseProvider>(
                         builder: (context, db, child) {
-                          var list = db.mpus;
+                          var list = db.iotDevices;
                           return ListView.builder(
                             physics: const BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics(),
@@ -161,7 +161,7 @@ class _MpuControllerState extends State<MpuController> {
                 if (_formKey.currentState!.validate()) {
                   final provider =
                       Provider.of<DatabaseProvider>(context, listen: false);
-                  provider.addMpu(MpuModel(
+                  provider.addiotDevice(IotDeviceModel(
                     //
                     name: nameController.text,
                     macAddress: macAddressController.text,
@@ -179,15 +179,15 @@ class _MpuControllerState extends State<MpuController> {
     );
   }
 
-  void _showUpdateDialog(BuildContext context, MpuModel mpu) {
+  void _showUpdateDialog(BuildContext context, IotDeviceModel iotDevice) {
     TextEditingController nameController = TextEditingController();
     TextEditingController ipController = TextEditingController();
     TextEditingController locationIdController = TextEditingController();
     TextEditingController macAddressController = TextEditingController();
-    nameController.text = mpu.name!;
-    ipController.text = mpu.ip!;
-    macAddressController.text = mpu.macAddress!;
-    locationIdController.text = mpu.locationId.toString();
+    nameController.text = iotDevice.name!;
+    ipController.text = iotDevice.ip!;
+    macAddressController.text = iotDevice.macAddress!;
+    locationIdController.text = iotDevice.locationId.toString();
 
     final _updateFormKey =
         GlobalKey<FormState>(); // Form anahtarını güncelledik
@@ -251,8 +251,8 @@ class _MpuControllerState extends State<MpuController> {
                 if (_updateFormKey.currentState!.validate()) {
                   final provider =
                       Provider.of<DatabaseProvider>(context, listen: false);
-                  provider.updateMpu(
-                    mpu.id!,
+                  provider.updateiotDevice(
+                    iotDevice.id!,
                     macAddressController.text,
                     ipController.text,
                     int.parse(locationIdController.text),

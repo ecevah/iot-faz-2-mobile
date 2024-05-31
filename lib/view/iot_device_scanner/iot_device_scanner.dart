@@ -2,22 +2,22 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class MPUListScreen extends StatefulWidget {
+class IotDeviceListScreen extends StatefulWidget {
   final baseIp;
-  const MPUListScreen({super.key, required this.baseIp});
+  const IotDeviceListScreen({super.key, required this.baseIp});
 
   @override
-  _MPUListScreenState createState() => _MPUListScreenState();
+  _IotDeviceListScreenState createState() => _IotDeviceListScreenState();
 }
 
-class _MPUListScreenState extends State<MPUListScreen> {
-  List<dynamic> mpuList = [];
+class _IotDeviceListScreenState extends State<IotDeviceListScreen> {
+  List<dynamic> iotDeviceList = [];
   bool isLoading = false;
 
-  Future<void> getMPUList() async {
+  Future<void> getiotDeviceList() async {
     setState(() {
       isLoading = true;
-      mpuList = [];
+      iotDeviceList = [];
     });
 
     for (int i = 0; i <= 255; i++) {
@@ -28,7 +28,7 @@ class _MPUListScreenState extends State<MPUListScreen> {
         var data = json.decode(response.body);
         if (data['status'] == true) {
           setState(() {
-            mpuList.add({
+            iotDeviceList.add({
               'id': data['id'],
               'macAddress': data['macAddress'],
             });
@@ -46,7 +46,7 @@ class _MPUListScreenState extends State<MPUListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('MPU Cihazları'),
+        title: Text('iotDevice Cihazları'),
       ),
       body: Column(
         children: [
@@ -55,21 +55,21 @@ class _MPUListScreenState extends State<MPUListScreen> {
           else
             Expanded(
               child: ListView.builder(
-                itemCount: mpuList.length,
+                itemCount: iotDeviceList.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text('ID: ${mpuList[index]['id']}'),
-                    subtitle:
-                        Text('MAC Address: ${mpuList[index]['macAddress']}'),
+                    title: Text('ID: ${iotDeviceList[index]['id']}'),
+                    subtitle: Text(
+                        'MAC Address: ${iotDeviceList[index]['macAddress']}'),
                   );
                 },
               ),
             ),
           ElevatedButton(
             onPressed: () {
-              getMPUList();
+              getiotDeviceList();
             },
-            child: Text('MPU Cihazlarını Bul'),
+            child: Text('iotDevice Cihazlarını Bul'),
           ),
         ],
       ),

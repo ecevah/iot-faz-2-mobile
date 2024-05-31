@@ -11,23 +11,23 @@ class WifiCheck extends StatefulWidget {
 }
 
 class _WifiCheckState extends State<WifiCheck> {
-  bool _mpuConnection = false;
+  bool _iotDeviceConnection = false;
 
   @override
   void initState() {
     super.initState();
-    _checkMpuConnection();
+    _checkiotDeviceConnection();
   }
 
-  Future<void> _checkMpuConnection() async {
+  Future<void> _checkiotDeviceConnection() async {
     try {
       final response = await http.get(Uri.parse('http://192.168.4.1/'));
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         final message = jsonData['message'];
-        if (message == "Mpu Connection") {
+        if (message == "iotDevice Connection") {
           setState(() {
-            _mpuConnection = true;
+            _iotDeviceConnection = true;
           });
         }
       }
@@ -44,14 +44,14 @@ class _WifiCheckState extends State<WifiCheck> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: _mpuConnection
+            child: _iotDeviceConnection
                 ? const Checked()
                 : Column(
                     children: [
-                      const Text("Lütfen MPU-XXX-XXX ağına bağlanın."),
+                      const Text("Lütfen iotDevice-XXX-XXX ağına bağlanın."),
                       ElevatedButton(
                         onPressed: () {
-                          _checkMpuConnection();
+                          _checkiotDeviceConnection();
                         },
                         child: const Text("Tekrar Dene"),
                       ),

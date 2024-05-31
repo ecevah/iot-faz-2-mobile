@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mpu_sql/model/iot_device_model.dart';
 import 'package:mpu_sql/model/location_model.dart';
-import 'package:mpu_sql/model/mpu_model.dart';
 import 'package:mpu_sql/services/provider.dart';
-import 'package:mpu_sql/widget/home/mpu_list_type.dart';
+import 'package:mpu_sql/widget/home/iot_device_list_type.dart';
 import 'package:mpu_sql/widget/home/location_text.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +20,7 @@ class _TestControllerState extends State<TestController> {
   void initState() {
     super.initState();
     _locationList = _getLocationList();
-    _getMpuList();
+    _getiotDeviceList();
   }
 
   Future _getLocationList() async {
@@ -28,9 +28,9 @@ class _TestControllerState extends State<TestController> {
     return await provider.fetchLocations();
   }
 
-  Future _getMpuList() async {
+  Future _getiotDeviceList() async {
     final provider = Provider.of<DatabaseProvider>(context, listen: false);
-    return await provider.fetchMpus();
+    return await provider.fetchiotDevices();
   }
 
   @override
@@ -70,17 +70,19 @@ class _TestControllerState extends State<TestController> {
                           ),
                           Consumer<DatabaseProvider>(
                             builder: (context, db, child) {
-                              final List<MpuModel> mpus = db.mpus
-                                  .where((mpu) => mpu.locationId == location.id)
+                              final List<IotDeviceModel> iotDevices = db
+                                  .iotDevices
+                                  .where((iotDevice) =>
+                                      iotDevice.locationId == location.id)
                                   .toList();
-                              return mpus.isNotEmpty
-                                  ? MpuListType(
-                                      mpus: mpus,
+                              return iotDevices.isNotEmpty
+                                  ? IotDeviceListType(
+                                      iotDevices: iotDevices,
                                       locationId: location.id!,
                                     )
                                   : ElevatedButton(
                                       onPressed: () {},
-                                      child: const Text('Add Mpu'),
+                                      child: const Text('Add iotDevice'),
                                     );
                             },
                           ),

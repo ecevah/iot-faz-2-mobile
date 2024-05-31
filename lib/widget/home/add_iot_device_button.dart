@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mpu_sql/view/wifi_check/wifi_check.dart';
 
-class AddMpuButton extends StatelessWidget {
-  const AddMpuButton({
+class AddIotDeviceButton extends StatelessWidget {
+  const AddIotDeviceButton({
     super.key,
   });
 
@@ -20,7 +20,7 @@ class AddMpuButton extends StatelessWidget {
               ),
             );
           },
-          child: const Text('Add Mpu'),
+          child: const Text('Add iotDevice'),
         ),
       ),
     );

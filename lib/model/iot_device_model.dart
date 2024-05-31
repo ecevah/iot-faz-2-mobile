@@ -1,13 +1,14 @@
-class MpuModel {
+class IotDeviceModel {
   int? id;
   int? locationId;
   String? name;
   String? ip;
   String? macAddress;
 
-  MpuModel({this.id, this.locationId, this.name, this.ip, this.macAddress});
+  IotDeviceModel(
+      {this.id, this.locationId, this.name, this.ip, this.macAddress});
 
-  MpuModel.fromJson(Map<String, dynamic> json) {
+  IotDeviceModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     locationId = json['locationId'];
     name = json['name'];

@@ -1,18 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mpu_sql/model/iot_device_location_model.dart';
+import 'package:mpu_sql/model/iot_device_model.dart';
 import 'package:mpu_sql/model/location_model.dart';
-import 'package:mpu_sql/model/mpu_location_model.dart';
-import 'package:mpu_sql/model/mpu_model.dart';
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
 
 class DatabaseProvider with ChangeNotifier {
-  String _searchTextMpu = "";
-  String get searchTextMpu => _searchTextMpu;
-  set searchTextMpu(String value) {
-    _searchTextMpu = value;
+  String _searchTextiotDevice = "";
+  String get searchTextiotDevice => _searchTextiotDevice;
+  set searchTextiotDevice(String value) {
+    _searchTextiotDevice = value;
     notifyListeners();
   }
 
@@ -34,19 +35,19 @@ class DatabaseProvider with ChangeNotifier {
         : _locations;
   }
 
-  List<MpuModel> _mpus = [];
-  List<MpuModel> get mpus {
-    return _searchTextMpu != ""
-        ? _mpus
+  List<IotDeviceModel> _iotDevices = [];
+  List<IotDeviceModel> get iotDevices {
+    return _searchTextiotDevice != ""
+        ? _iotDevices
             .where((element) => element.name!
                 .toLowerCase()
-                .contains(_searchTextMpu.toLowerCase()))
+                .contains(_searchTextiotDevice.toLowerCase()))
             .toList()
-        : _mpus;
+        : _iotDevices;
   }
 
-  List<MpuLocationModel> _mpuLocation = [];
-  List<MpuLocationModel> get mpusLocation => _mpuLocation;
+  List<IotDeviceLocationModel> _iotDeviceLocation = [];
+  List<IotDeviceLocationModel> get iotDevicesLocation => _iotDeviceLocation;
 
   Database? _database;
   Future<Database> get database async {
@@ -66,7 +67,7 @@ class DatabaseProvider with ChangeNotifier {
   }
 
   static const lTable = "locationTable";
-  static const mTable = "mpuTable";
+  static const mTable = "iotDeviceTable";
 
   Future<void> _createDb(Database db, int version) async {
     await db.transaction((txn) async {
@@ -104,19 +105,19 @@ class DatabaseProvider with ChangeNotifier {
     });
   }
 
-  Future<List<MpuModel>> fetchMpus() async {
+  Future<List<IotDeviceModel>> fetchiotDevices() async {
     final db = await database;
     return await db.transaction((txn) async {
       return await txn.query(mTable).then((value) {
         final converted = List<Map<String, dynamic>>.from(value);
 
-        List<MpuModel> nList = List.generate(
+        List<IotDeviceModel> nList = List.generate(
           converted.length,
-          (index) => MpuModel.fromJson(converted[index]),
+          (index) => IotDeviceModel.fromJson(converted[index]),
         );
 
-        _mpus = nList;
-        return _mpus;
+        _iotDevices = nList;
+        return _iotDevices;
       });
     });
   }
@@ -144,7 +145,7 @@ class DatabaseProvider with ChangeNotifier {
     });
   }
 
-  Future<void> updateMpu(int id, String nMacAddress, String nIp,
+  Future<void> updateiotDevice(int id, String nMacAddress, String nIp,
       int nLocationId, String nName) async {
     final db = await database;
     await db.transaction((txn) async {
@@ -161,7 +162,7 @@ class DatabaseProvider with ChangeNotifier {
         whereArgs: [id],
       )
           .then((_) {
-        var file = _mpus.firstWhere((element) => element.id == id);
+        var file = _iotDevices.firstWhere((element) => element.id == id);
         file.ip = nIp;
         file.locationId = nLocationId;
         file.name = nName;
@@ -171,7 +172,7 @@ class DatabaseProvider with ChangeNotifier {
     });
   }
 
-  Future<void> findAndModifyMPUs(String baseIp) async {
+  Future<void> findAndModifyiotDevices(String baseIp) async {
     for (int i = 0; i <= 255; i++) {
       String ipAddress = '$baseIp$i';
       final response = await http.get(Uri.parse('http://$ipAddress/api'));
@@ -180,13 +181,14 @@ class DatabaseProvider with ChangeNotifier {
         var data = json.decode(response.body);
         if (data['status'] == true) {
           String macAddress = data['macAddress'];
-          await updateMpuByMacAddress(macAddress, ipAddress);
+          await updateiotDeviceByMacAddress(macAddress, ipAddress);
         }
       }
     }
   }
 
-  Future<void> updateMpuByMacAddress(String macAddress, String nIp) async {
+  Future<void> updateiotDeviceByMacAddress(
+      String macAddress, String nIp) async {
     final db = await database;
     await db.transaction((txn) async {
       await txn
@@ -199,7 +201,7 @@ class DatabaseProvider with ChangeNotifier {
         whereArgs: [macAddress],
       )
           .then((_) {
-        _mpus.forEach((file) {
+        _iotDevices.forEach((file) {
           if (file.macAddress == macAddress) {
             file.ip = nIp;
           }
@@ -228,21 +230,21 @@ class DatabaseProvider with ChangeNotifier {
     });
   }
 
-  Future<void> addMpu(MpuModel mpu) async {
+  Future<void> addiotDevice(IotDeviceModel iotDevice) async {
     final db = await database;
     await db.transaction((txn) async {
       await txn
-          .insert(mTable, mpu.toJson(),
+          .insert(mTable, iotDevice.toJson(),
               conflictAlgorithm: ConflictAlgorithm.replace)
           .then((value) {
-        final file = MpuModel(
+        final file = IotDeviceModel(
             id: value,
-            name: mpu.name,
-            locationId: mpu.locationId,
-            macAddress: mpu.macAddress,
-            ip: mpu.ip);
+            name: iotDevice.name,
+            locationId: iotDevice.locationId,
+            macAddress: iotDevice.macAddress,
+            ip: iotDevice.ip);
 
-        _mpus.add(file);
+        _iotDevices.add(file);
         notifyListeners();
       });
     });
@@ -259,42 +261,43 @@ class DatabaseProvider with ChangeNotifier {
     });
   }
 
-  Future<void> deleteMpu(int mpuId) async {
+  Future<void> deleteiotDevice(int iotDeviceId) async {
     final db = await database;
     await db.transaction((txn) async {
-      await txn.delete(mTable, where: 'id == ?', whereArgs: [mpuId]).then((_) {
-        _mpus.removeWhere((element) => element.id == mpuId);
+      await txn
+          .delete(mTable, where: 'id == ?', whereArgs: [iotDeviceId]).then((_) {
+        _iotDevices.removeWhere((element) => element.id == iotDeviceId);
       });
       notifyListeners();
     });
   }
 
-  Future<void> fetchMpuLocations() async {
+  Future<void> fetchiotDeviceLocations() async {
     final db = await database;
     final List<Map<String, dynamic>> result = await db.rawQuery('''
-    SELECT mpus.id, mpus.name AS mpuName, mpus.ip, mpus.macAddress, locations.name AS locationName, locations.baseIp AS baseIp
-    FROM mpus
-    JOIN locations ON mpus.locationId = locations.id
+    SELECT iotDevices.id, iotDevices.name AS iotDeviceName, iotDevices.ip, iotDevices.macAddress, locations.name AS locationName, locations.baseIp AS baseIp
+    FROM iotDevices
+    JOIN locations ON iotDevices.locationId = locations.id
   ''');
 
-    List<MpuLocationModel> mpuLocations = [];
+    List<IotDeviceLocationModel> iotDeviceLocations = [];
     for (Map<String, dynamic> row in result) {
-      mpuLocations.add(MpuLocationModel(
+      iotDeviceLocations.add(IotDeviceLocationModel(
         locationId: row['locationId'],
         locationName: row['locationName'],
         baseIp: row['baseIp'],
-        mpuId: row['id'],
-        mpuName: row['mpuName'],
+        iotDeviceId: row['id'],
+        iotDeviceName: row['iotDeviceName'],
         ip: row['ip'],
         macAddress: row['macAddress'],
       ));
     }
 
-    _mpuLocation = mpuLocations;
+    _iotDeviceLocation = iotDeviceLocations;
     notifyListeners();
   }
 
-  Future<MpuModel?> fetchMpuById(int id) async {
+  Future<IotDeviceModel?> fetchiotDeviceById(int id) async {
     final db = await database;
     final List<Map<String, dynamic>> result = await db.query(
       mTable,
@@ -303,9 +306,9 @@ class DatabaseProvider with ChangeNotifier {
     );
 
     if (result.isNotEmpty) {
-      return MpuModel.fromJson(result.first);
+      return IotDeviceModel.fromJson(result.first);
     } else {
-      return MpuModel();
+      return IotDeviceModel();
     }
   }
 
@@ -324,7 +327,7 @@ class DatabaseProvider with ChangeNotifier {
     }
   }
 
-  Future<MpuModel> fetchMpuByLocation(int location) async {
+  Future<IotDeviceModel> fetchiotDeviceByLocation(int location) async {
     final db = await database;
     final List<Map<String, dynamic>> result = await db.query(
       mTable,
@@ -333,9 +336,9 @@ class DatabaseProvider with ChangeNotifier {
     );
 
     if (result.isNotEmpty) {
-      return MpuModel.fromJson(result.first);
+      return IotDeviceModel.fromJson(result.first);
     } else {
-      return MpuModel();
+      return IotDeviceModel();
     }
   }
 }

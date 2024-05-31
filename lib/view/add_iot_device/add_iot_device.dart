@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mpu_sql/model/mpu_model.dart';
+import 'package:mpu_sql/model/iot_device_model.dart';
 import 'package:mpu_sql/services/provider.dart';
 import 'package:mpu_sql/view/home/home.dart';
 import 'package:provider/provider.dart';
@@ -80,8 +80,8 @@ class _WiFiScannerState extends State<WiFiScanner> {
                   if (responseData['status'] == 'true') {
                     final provider =
                         Provider.of<DatabaseProvider>(context, listen: false);
-                    provider.addMpu(MpuModel(
-                      name: 'MPU-${responseData['macAddress']}',
+                    provider.addiotDevice(IotDeviceModel(
+                      name: 'iotDevice-${responseData['macAddress']}',
                       macAddress: responseData['macAddress'],
                       ip: responseData['ip'],
                       locationId: selectedLocationId,

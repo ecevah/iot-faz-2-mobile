@@ -1,4 +1,4 @@
-class MpuData {
+class IotDeviceData {
   String? lineVoltage;
   String? current;
   String? freqBuffer;
@@ -9,7 +9,7 @@ class MpuData {
   String? staticWaitDelay;
   String? dynamicWaitDelay;
   String? mcuTick;
-  String? mpuSwVersion;
+  String? iotDeviceSwVersion;
   String? endisStatus;
   String? endisStatusThree;
   String? resetDelayTimeButtonStatus;
@@ -24,7 +24,7 @@ class MpuData {
   String? earthVoltageCalib;
   String? tempeatureMcuCalib;
 
-  MpuData({
+  IotDeviceData({
     this.lineVoltage,
     this.current,
     this.freqBuffer,
@@ -35,7 +35,7 @@ class MpuData {
     this.staticWaitDelay,
     this.dynamicWaitDelay,
     this.mcuTick,
-    this.mpuSwVersion,
+    this.iotDeviceSwVersion,
     this.endisStatus,
     this.endisStatusThree,
     this.resetDelayTimeButtonStatus,
@@ -51,7 +51,7 @@ class MpuData {
     this.tempeatureMcuCalib,
   });
 
-  MpuData.fromJson(Map<String, dynamic>? json) {
+  IotDeviceData.fromJson(Map<String, dynamic>? json) {
     if (json != null) {
       // Gelen JSON verisini işle
       lineVoltage = json['lineVoltage'];
@@ -64,7 +64,7 @@ class MpuData {
       staticWaitDelay = json['staticWaitDelay'];
       dynamicWaitDelay = json['dynamicWaitDelay'];
       mcuTick = json['mcuTick'];
-      mpuSwVersion = json['mpuSwVersion'];
+      iotDeviceSwVersion = json['iotDeviceSwVersion'];
       endisStatus = json['endisStatus'];
       endisStatusThree = json['endisStatusThree'];
       resetDelayTimeButtonStatus = json['resetDelayTimeButtonStatus'];
@@ -90,7 +90,7 @@ class MpuData {
       staticWaitDelay = 'N/A';
       dynamicWaitDelay = 'N/A';
       mcuTick = 'N/A';
-      mpuSwVersion = 'N/A';
+      iotDeviceSwVersion = 'N/A';
       endisStatus = 'N/A';
       endisStatusThree = 'N/A';
       resetDelayTimeButtonStatus = 'N/A';
@@ -119,7 +119,7 @@ class MpuData {
     data['staticWaitDelay'] = staticWaitDelay;
     data['dynamicWaitDelay'] = dynamicWaitDelay;
     data['mcuTick'] = mcuTick;
-    data['mpuSwVersion'] = mpuSwVersion;
+    data['iotDeviceSwVersion'] = iotDeviceSwVersion;
     data['endisStatus'] = endisStatus;
     data['endisStatusThree'] = endisStatusThree;
     data['resetDelayTimeButtonStatus'] = resetDelayTimeButtonStatus;

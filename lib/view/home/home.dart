@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _locationList = _getLocationList();
-    _getMpuList();
+    _getiotDeviceList();
   }
 
   Future _getLocationList() async {
@@ -28,9 +28,9 @@ class _HomePageState extends State<HomePage> {
     return await provider.fetchLocations();
   }
 
-  Future _getMpuList() async {
+  Future _getiotDeviceList() async {
     final provider = Provider.of<DatabaseProvider>(context, listen: false);
-    return await provider.fetchMpus();
+    return await provider.fetchiotDevices();
   }
 
   @override
@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
                 },
-                child: const Text('Add Mpu'),
+                child: const Text('Add iotDevice'),
               ),
               ElevatedButton(
                 onPressed: () {

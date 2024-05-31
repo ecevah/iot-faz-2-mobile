@@ -1,6 +1,6 @@
 class DataModel {
   int? id;
-  int? mpuId;
+  int? iotDeviceId;
   double? voltage;
   double? current;
   double? frequency;
@@ -12,7 +12,7 @@ class DataModel {
 
   DataModel(
       {this.id,
-      this.mpuId,
+      this.iotDeviceId,
       this.voltage,
       this.current,
       this.frequency,
@@ -24,7 +24,7 @@ class DataModel {
 
   DataModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    mpuId = json['mpu_id'];
+    iotDeviceId = json['iotDevice_id'];
     voltage = json['voltage'];
     current = json['current'];
     frequency = json['frequency'];
@@ -38,7 +38,7 @@ class DataModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['mpu_id'] = mpuId;
+    data['iotDevice_id'] = iotDeviceId;
     data['voltage'] = voltage;
     data['current'] = current;
     data['frequency'] = frequency;

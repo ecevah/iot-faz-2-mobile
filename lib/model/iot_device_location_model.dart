@@ -1,29 +1,29 @@
-class MpuLocationModel {
+class IotDeviceLocationModel {
   final int? locationId;
   final String? locationName;
   final String? baseIp;
-  final int? mpuId;
-  final String? mpuName;
+  final int? iotDeviceId;
+  final String? iotDeviceName;
   final String? ip;
   final String? macAddress;
 
-  MpuLocationModel({
+  IotDeviceLocationModel({
     this.locationId,
     this.locationName,
     this.baseIp,
-    this.mpuId,
-    this.mpuName,
+    this.iotDeviceId,
+    this.iotDeviceName,
     this.ip,
     this.macAddress,
   });
 
-  factory MpuLocationModel.fromJson(Map<String, dynamic> json) {
-    return MpuLocationModel(
+  factory IotDeviceLocationModel.fromJson(Map<String, dynamic> json) {
+    return IotDeviceLocationModel(
       locationId: json['id'],
       locationName: json['location_name'],
       baseIp: json['baseIp'],
-      mpuId: json['mpu_id'],
-      mpuName: json['mpu_name'],
+      iotDeviceId: json['iotDevice_id'],
+      iotDeviceName: json['iotDevice_name'],
       ip: json['ip'],
       macAddress: json['macAddress'],
     );
@@ -34,8 +34,8 @@ class MpuLocationModel {
       'id': locationId,
       'location_name': locationName,
       'baseIp': baseIp,
-      'mpu_id': mpuId,
-      'mpu_name': mpuName,
+      'iotDevice_id': iotDeviceId,
+      'iotDevice_name': iotDeviceName,
       'ip': ip,
       'macAddress': macAddress,
     };

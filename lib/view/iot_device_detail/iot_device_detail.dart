@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mpu_sql/model/mpu_data.dart';
+import 'package:mpu_sql/model/iot_device_data.dart';
 import 'package:mpu_sql/services/provider.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 
-class MpuDetail extends StatefulWidget {
+class IotDeviceDetail extends StatefulWidget {
   final int id;
   final int locationId;
   final String ip;
-  const MpuDetail({
+  const IotDeviceDetail({
     Key? key,
     required this.id,
     required this.locationId,
@@ -18,13 +18,13 @@ class MpuDetail extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<MpuDetail> createState() => _MpuDetailState();
+  State<IotDeviceDetail> createState() => _iotDeviceDetailState();
 }
 
-class _MpuDetailState extends State<MpuDetail> {
-  late Future _mpuList;
-  late Future _mpuListById;
-  MpuData? _mpuData;
+class _iotDeviceDetailState extends State<IotDeviceDetail> {
+  late Future _iotDeviceList;
+  late Future _iotDeviceListById;
+  IotDeviceData? _iotDeviceData;
 
   bool _ledOn = false;
   bool _ledOn2 = false;
@@ -40,7 +40,7 @@ class _MpuDetailState extends State<MpuDetail> {
   String staticWaitDelay = 'N/A';
   String dynamicWaitDelay = 'N/A';
   String mcuTick = 'N/A';
-  String mpuSwVersion = 'N/A';
+  String iotDeviceSwVersion = 'N/A';
   String endisStatus = 'N/A';
   String endisStatusThree = 'N/A';
   String resetDelayTimeButtonStatus = 'N/A';
@@ -60,19 +60,19 @@ class _MpuDetailState extends State<MpuDetail> {
   @override
   void initState() {
     super.initState();
-    _mpuList = _getMpuList();
-    _mpuListById = _getMpuListById();
+    _iotDeviceList = _getiotDeviceList();
+    _iotDeviceListById = _getiotDeviceListById();
     channel = IOWebSocketChannel.connect('ws://${widget.ip}/ws');
   }
 
-  Future _getMpuList() async {
+  Future _getiotDeviceList() async {
     final provider = Provider.of<DatabaseProvider>(context, listen: false);
-    return await provider.fetchMpus();
+    return await provider.fetchiotDevices();
   }
 
-  Future _getMpuListById() async {
+  Future _getiotDeviceListById() async {
     final provider = Provider.of<DatabaseProvider>(context, listen: false);
-    return await provider.fetchMpuById(widget.id);
+    return await provider.fetchiotDeviceById(widget.id);
   }
 
   void _toggleLed(int pin, bool state) async {
@@ -110,17 +110,17 @@ class _MpuDetailState extends State<MpuDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mpu Detail'),
+        title: const Text('iotDevice Detail'),
       ),
       body: Center(
         child: Column(
           children: [
             Consumer<DatabaseProvider>(
               builder: (context, db, child) {
-                var list = db.mpus
-                    .where((mpu) =>
-                        mpu.locationId == widget.locationId &&
-                        mpu.id != widget.id)
+                var list = db.iotDevices
+                    .where((iotDevice) =>
+                        iotDevice.locationId == widget.locationId &&
+                        iotDevice.id != widget.id)
                     .toList();
                 return SizedBox(
                   height: 70,
@@ -137,7 +137,7 @@ class _MpuDetailState extends State<MpuDetail> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MpuDetail(
+                              builder: (context) => IotDeviceDetail(
                                   id: list[i].id!,
                                   locationId: list[i].locationId!,
                                   ip: list[i].ip!),
@@ -158,7 +158,7 @@ class _MpuDetailState extends State<MpuDetail> {
               },
             ),
             FutureBuilder(
-              future: _mpuList,
+              future: _iotDeviceList,
               builder: (_, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasError) {
@@ -172,10 +172,11 @@ class _MpuDetailState extends State<MpuDetail> {
                         children: [
                           Consumer<DatabaseProvider>(
                             builder: (context, db, child) {
-                              var list = db.mpus
-                                  .where((mpu) =>
-                                      mpu.locationId == widget.locationId &&
-                                      mpu.id != widget.id)
+                              var list = db.iotDevices
+                                  .where((iotDevice) =>
+                                      iotDevice.locationId ==
+                                          widget.locationId &&
+                                      iotDevice.id != widget.id)
                                   .toList();
                               return SizedBox(
                                 height: 70,
@@ -192,10 +193,12 @@ class _MpuDetailState extends State<MpuDetail> {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => MpuDetail(
-                                                id: list[i].id!,
-                                                locationId: list[i].locationId!,
-                                                ip: list[i].ip!),
+                                            builder: (context) =>
+                                                IotDeviceDetail(
+                                                    id: list[i].id!,
+                                                    locationId:
+                                                        list[i].locationId!,
+                                                    ip: list[i].ip!),
                                           ),
                                         );
                                       },
@@ -206,7 +209,7 @@ class _MpuDetailState extends State<MpuDetail> {
                             },
                           ),
                           FutureBuilder(
-                            future: _mpuList,
+                            future: _iotDeviceList,
                             builder: (_, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.done) {
@@ -248,8 +251,9 @@ class _MpuDetailState extends State<MpuDetail> {
                                         dynamicWaitDelay =
                                             data['dynamicWaitDelay'].toString();
                                         mcuTick = data['mcuTick'].toString();
-                                        mpuSwVersion =
-                                            data['mpuSwVersion'].toString();
+                                        iotDeviceSwVersion =
+                                            data['iotDeviceSwVersion']
+                                                .toString();
                                         endisStatus =
                                             data['endisStatus'].toString();
                                         endisStatusThree =
@@ -301,7 +305,7 @@ class _MpuDetailState extends State<MpuDetail> {
                                                 'Dynamic Wait Delay: $dynamicWaitDelay'),
                                             Text('MCU Tick: $mcuTick'),
                                             Text(
-                                                'MPU SW Version: $mpuSwVersion'),
+                                                'iotDevice SW Version: $iotDeviceSwVersion'),
                                             Text('Endis Status: $endisStatus'),
                                             Text(
                                                 'Endis Status Three: $endisStatusThree'),
